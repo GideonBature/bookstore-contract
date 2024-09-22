@@ -11,6 +11,7 @@ pub trait IBookStore<TBookStore> {
     fn get_books(self: @TBookStore) -> Array<(felt252, Book)>;
     fn get_book(self: @TBookStore, id: felt252) -> Book;
     fn update_book(ref self: TBookStore, id: felt252, updated_book: Book);
+    // https://book.cairo-lang.org/ch14-03-contract-events.html
     fn delete_book(ref self: TBookStore, id: felt252);
 }
 
