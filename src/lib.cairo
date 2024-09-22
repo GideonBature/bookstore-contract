@@ -16,7 +16,8 @@ pub trait IBookStore<TBookStore> {
 
 #[starknet::contract]
 pub mod BookStore {
-    use super::Book;
+    use starknet::event::EventEmitter;
+use super::Book;
 
     use starknet::storage::{
         StoragePointerReadAccess, StoragePointerWriteAccess, Vec, VecTrait, MutableVecTrait, Map,
@@ -30,6 +31,31 @@ pub mod BookStore {
         books: Map<felt252, Book>, // map book_id => book Struct
         librarian: ContractAddress,
         books_stored: Vec<(felt252, Book)>,
+    }
+
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        BookAdded: BookAdded,
+        BookUpdated: BookUpdated,
+        BookDeleted: BookDeleted,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct BookAdded {
+        id: felt252,
+        book: Book,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct BookUpdated {
+        id: felt252,
+        book: Book,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct BookDeleted {
+        id: felt252,
     }
 
     #[constructor]
@@ -50,7 +76,7 @@ pub mod BookStore {
 
             self.books_stored.append().write((id, book));
 
-            println!("Book added successfully with id: {}", id);
+            self.emit(BookAdded { id, book });
         }
 
         fn get_books(self: @ContractState) -> Array<(felt252, Book)> {
@@ -77,8 +103,6 @@ pub mod BookStore {
             assert(caller == librarian, 'Only Librarian can update books');
             self.books.write(id, updated_book);
 
-            println!("Book updated successfully with id: {}", id);
-
             let mut index = 0;
             let length = self.books_stored.len();
             while index != length {
@@ -87,13 +111,17 @@ pub mod BookStore {
                     self.books_stored.at(index).write((id, updated_book));
                 }
                 index = index + 1;
-            }
+            };
+
+            self.emit(BookUpdated { id, book: updated_book });
         }
 
         fn delete_book(ref self: ContractState, id: felt252) {
             let caller = get_caller_address();
             let librarian = self.librarian.read();
             assert(caller == librarian, 'Only Librarian can delete books');
+
+            self.emit(BookDeleted { id });
         }
     }
 }
