@@ -18,7 +18,7 @@ pub trait IBookStore<TBookStore> {
 #[starknet::contract]
 pub mod BookStore {
     use starknet::event::EventEmitter;
-use super::Book;
+    use super::Book;
 
     use starknet::storage::{
         StoragePointerReadAccess, StoragePointerWriteAccess, Vec, VecTrait, MutableVecTrait, Map,
