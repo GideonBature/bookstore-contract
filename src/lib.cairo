@@ -110,6 +110,7 @@ pub mod BookStore {
                 let (book_id, _book) = self.books_stored.at(index).read();
                 if book_id == id {
                     self.books_stored.at(index).write((id, updated_book));
+                    break;
                 }
                 index = index + 1;
             };
@@ -136,6 +137,7 @@ pub mod BookStore {
                 let (book_id, _book) = self.books_stored.at(index).read();
                 if book_id == id {
                     self.books_stored.at(index).write((id, book));
+                    break;
                 }
                 index = index + 1;
             };
