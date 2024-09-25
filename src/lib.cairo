@@ -122,6 +122,24 @@ pub mod BookStore {
             let librarian = self.librarian.read();
             assert(caller == librarian, 'Only Librarian can delete books');
 
+            let book = Book {
+                name: '',
+                genre: '',
+                author: '',
+            };
+
+            self.books.write(id, book);
+
+            let mut index = 0;
+            let length = self.books_stored.len();
+            while index != length {
+                let (book_id, _book) = self.books_stored.at(index).read();
+                if book_id == id {
+                    self.books_stored.at(index).write((id, book));
+                }
+                index = index + 1;
+            };
+
             self.emit(BookDeleted { id });
         }
     }
