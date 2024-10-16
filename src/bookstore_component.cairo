@@ -78,10 +78,10 @@ pub mod BookStoreComponent {
     }
 
     #[embeddable_as(BookStore)]
-    impl BookStoreImpl<TContractState, +HasComponent<TContractState>> of super::IBookStore<ComponentState<ContractState>> {
-
+    impl BookStoreImpl<
+        TContractState, +HasComponent<TContractState>
+    > of super::IBookStore<ComponentState<ContractState>> {
         fn add_book(ref self: ComponentState<TContractState>, id: felt252, new_book: Book) {
-            
             self.assert_only_librarian();
 
             let book = Book { ..new_book };
@@ -111,7 +111,6 @@ pub mod BookStoreComponent {
         }
 
         fn update_book(ref self: ComponentState<TContractState>, id: felt252, updated_book: Book) {
-            
             self.assert_only_librarian();
 
             self.books.write(id, updated_book);
@@ -131,14 +130,9 @@ pub mod BookStoreComponent {
         }
 
         fn delete_book(ref self: ComponentState<TContractState>, id: felt252) {
-            
             self.assert_only_librarian();
 
-            let book = Book {
-                name: '',
-                genre: '',
-                author: '',
-            };
+            let book = Book { name: '', genre: '', author: '', };
 
             self.books.write(id, book);
 
@@ -162,7 +156,9 @@ pub mod BookStoreComponent {
     }
 
     #[generate_trait]
-    impl InternalImpl<TContractState, +HasComponent<TContractState>> of InternalTrait<TContractState> {
+    impl InternalImpl<
+        TContractState, +HasComponent<TContractState>
+    > of InternalTrait<TContractState> {
         fn initializer(ref self: ComponentState<TContractState>, librarian: ContractAddress) {
             self._set_librarian(librarian);
         }
@@ -178,11 +174,7 @@ pub mod BookStoreComponent {
         fn _set_librarian(ref self: ComponentState<TContractState>, librarian: ContractAddress) {
             self.librarian.write(librarian);
 
-            self.emit(
-                LibrarianSet {
-                    new_librarian: librarian
-                }
-            );
+            self.emit(LibrarianSet { new_librarian: librarian });
         }
     }
 }
